@@ -54,7 +54,7 @@ namespace Klub
 
             // Загружаем товары, фильтруем их по введенному тексту в поисковом поле
             var filteredTovars = bd.Books
-                .Where(t => (t.Name.ToLower().Contains(searchText)) && (t.Id_Status == 2 || t.Id == 3)) // Фильтруем по названию
+                .Where(t => (t.Name.ToLower().Contains(searchText)) && (t.Id_Status == 2 || t.Id_Status == 3)) // Фильтруем по названию
                 .OrderBy(t => t.Name) // Сортируем по алфавиту
                 .ToList();
 

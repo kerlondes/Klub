@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Klub.Windows
+namespace Klub.Windows.AdminWindows
 {
     /// <summary>
     /// Логика взаимодействия для AdminWindow.xaml
@@ -22,6 +22,17 @@ namespace Klub.Windows
         public AdminWindow()
         {
             InitializeComponent();
+        }
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ManagerWindows.EditOrderWindow redachZakaz = new ManagerWindows.EditOrderWindow();
+            redachZakaz.Show();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            EditTovarWindow EditTovarWindow = new EditTovarWindow();
+            EditTovarWindow.Show();
         }
     }
 }

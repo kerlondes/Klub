@@ -33,7 +33,6 @@ namespace Klub
         public virtual DbSet<Status_Book> Status_Book { get; set; }
         public virtual DbSet<Supplier> Suppliers { get; set; }
         public virtual DbSet<Supply> Supplies { get; set; }
-        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<User> Users { get; set; }
     }
 }

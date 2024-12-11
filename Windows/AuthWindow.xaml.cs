@@ -39,12 +39,12 @@ namespace Klub.Windows
 
                 if (user.Id_Role == 2)  // Если роль - менеджер
                 {
-                    ManagerWindow managerWindow = new ManagerWindow();
+                    ManagerWindows.ManagerWindow managerWindow = new ManagerWindows.ManagerWindow();
                     managerWindow.Show();
                 }
                 else if (user.Id_Role == 3)  // Если роль - администратор
                 {
-                    AdminWindow managerWindow = new AdminWindow();
+                    AdminWindows.AdminWindow managerWindow = new AdminWindows.AdminWindow();
                     managerWindow.Show();
                 }
                 else
