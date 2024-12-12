@@ -25,8 +25,8 @@ namespace Klub.Windows.AdminWindows
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            ManagerWindows.EditOrderWindow redachZakaz = new ManagerWindows.EditOrderWindow();
-            redachZakaz.Show();
+            ManagerWindows.EditOrderWindow redachorder = new ManagerWindows.EditOrderWindow();
+            redachorder.Show();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

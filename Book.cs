@@ -26,7 +26,7 @@ namespace Klub
         public string Image { get; set; }
         public string Description { get; set; }
         public decimal Prise { get; set; }
-        public int Discount { get; set; }
+        public Nullable<int> Discount { get; set; }
         public int Id_Supplier { get; set; }
         public int Id_Status { get; set; }
         public Nullable<int> Remains { get; set; }

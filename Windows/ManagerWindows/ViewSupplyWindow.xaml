@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Остатки товара" Height="395" Width="572" Background="#FFE2F0D9">
     <Grid>
-        <DataGrid Name="ZakazDataGrid" Margin="10,52,26,10" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True"
+        <DataGrid Name="orderDataGrid" Margin="10,52,26,10" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True"
               ItemsSource="{Binding TovarList}" IsReadOnly="True" BorderBrush="#FF337F2C">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Название товара" Binding="{Binding Name}" />

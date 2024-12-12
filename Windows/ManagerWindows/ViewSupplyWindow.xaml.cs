@@ -28,7 +28,7 @@ namespace Klub.Windows
             // Преобразуем данные в ObservableCollection для привязки
             TovarList = new ObservableCollection<Book>(tovarData);
             // Устанавливаем привязку для DataGrid
-            ZakazDataGrid.DataContext = this;
+            orderDataGrid.DataContext = this;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

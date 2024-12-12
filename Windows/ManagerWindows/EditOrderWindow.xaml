@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Title="Редактирование заказа" Height="450" Width="617" Background="#FFE2F0D9">
     <Grid>
-        <DataGrid Name="ZakazDataGrid" Margin="10,52,26,10" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True"
-      ItemsSource="{Binding ZakazList}" IsReadOnly="False">
+        <DataGrid Name="orderDataGrid" Margin="10,52,26,10" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True"
+      ItemsSource="{Binding orderList}" IsReadOnly="False">
             <!-- Столбец для отображения названия товара -->
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Название товара" Binding="{Binding Book.Name}" />
@@ -22,7 +22,7 @@
                 <!-- Столбец для отображения Статуса -->
                 <DataGridTextColumn Header="Статус" Binding="{Binding Basket.Status_Basket.Name}" />
 
-                <!-- Другие столбцы для отображения данных из Zakaz -->
+                <!-- Другие столбцы для отображения данных из order -->
                 <DataGridTextColumn Header="Количество" Binding="{Binding Quantity}" />
                 <DataGridTextColumn Header="Сумма" Binding="{Binding SumOrder}" />
             </DataGrid.Columns>

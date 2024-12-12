@@ -32,16 +32,16 @@ namespace Klub
             }
 
             // Получаем корзину текущего пользователя
-            var korzina = currentUser.Baskets.FirstOrDefault(k => k.Id_status == 1); // Корзина в статусе "в процессе"
-            if (korzina == null)
+            var basket = currentUser.Baskets.FirstOrDefault(k => k.Id_status == 1); // Корзина в статусе "в процессе"
+            if (basket == null)
             {
                 MessageBox.Show("Ваша корзина пуста!", "Корзина", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
             // Открываем окно с корзиной и передаем туда данные
-            Windows.BasketWindow korzinaWindow = new Windows.BasketWindow(korzina);
-            korzinaWindow.Show();
+            Windows.BasketWindow basketWindow = new Windows.BasketWindow(basket);
+            basketWindow.Show();
             this.Close();
         }
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -256,11 +256,11 @@ namespace Klub
             }
 
             // Получаем корзину текущего пользователя
-            var korzina = currentUser.Baskets.FirstOrDefault(k => k.Id_status == 1); // Корзина в статусе "в процессе"
-            if (korzina == null)
+            var basket = currentUser.Baskets.FirstOrDefault(k => k.Id_status == 1); // Корзина в статусе "в процессе"
+            if (basket == null)
             {
                 // Если корзина не найдена, создаем новую корзину
-                korzina = new Basket
+                basket = new Basket
                 {
                     Id_User = currentUser.Id,
                     Date = DateTime.Now,
@@ -269,14 +269,14 @@ namespace Klub
                     Descount = 0, // Начальная скидка
                     Delivery_time = 0, // Срок не определен
                     GenericCode = GenerateRandomCode(), // Генерируем случайный код
-                    Orders = new List<Order>() // Инициализация коллекции Zakazs
+                    Orders = new List<Order>() // Инициализация коллекции orders
                 };
-                bd.Baskets.Add(korzina);
+                bd.Baskets.Add(basket);
                 bd.SaveChanges(); // Сохраняем корзину в базе данных
             }
 
             // Проверяем, есть ли уже этот товар в корзине
-            var existingZakaz = korzina.Orders.FirstOrDefault(z => z.Id_book == tovar.Id);
+            var existingorder = basket.Orders.FirstOrDefault(z => z.Id_book == tovar.Id);
 
             // Получаем цену с учетом скидки
             decimal discountedPrice = CalculateDiscountedPrice(tovar.Prise, tovar.Discount);
@@ -284,25 +284,25 @@ namespace Klub
             // Приводим цену к целому числу
             int discountedPriceAsInt = Convert.ToInt32(Math.Round(discountedPrice));
 
-            if (existingZakaz != null)
+            if (existingorder != null)
             {
                 // Если товар уже есть в корзине, увеличиваем его количество и пересчитываем сумму
-                existingZakaz.Quantity += 1;
-                existingZakaz.SumOrder = existingZakaz.Quantity * discountedPriceAsInt;
+                existingorder.Quantity += 1;
+                existingorder.SumOrder = existingorder.Quantity * discountedPriceAsInt;
             }
             else
             {
                 // Если товара нет в корзине, добавляем его как новый заказ
-                var zakaz = new Order
+                var order = new Order
                 {
                     Id_book = tovar.Id, // ID товара
-                    Id_Busket = korzina.Id, // ID корзины
+                    Id_Busket = basket.Id, // ID корзины
                     Quantity = 1, // Количество товара
                     SumOrder = discountedPriceAsInt // Сумма с учетом скидки
                 };
 
                 // Добавляем заказ в корзину
-                korzina.Orders.Add(zakaz);
+                basket.Orders.Add(order);
             }
 
             // Сохраняем изменения в базе данных

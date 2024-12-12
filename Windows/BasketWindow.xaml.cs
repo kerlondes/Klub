@@ -17,147 +17,116 @@ namespace Klub.Windows
     public partial class BasketWindow : Window
     {
         BDEntities bd = new BDEntities();
-        Basket korzina;
+        Basket basket;
 
-        public BasketWindow(Basket korzina)
+        public BasketWindow(Basket basket)
         {
             InitializeComponent();
-            this.korzina = korzina;
+            this.basket = basket;
 
-            // Загружаем товары в корзине
-            foreach (var zakaz in korzina.Orders)
+            RefreshItemsList();
+        }
+        public class OrderViewModel
+        {
+            public string DisplayText => $"{Order.Book.Name} - {Order.Quantity} шт. - {Order.SumOrder.ToString("C")}";
+            public Order Order { get; }
+
+            public OrderViewModel(Order order)
             {
-                var tovar = zakaz.Book;
-
-                var item = new StackPanel { Orientation = Orientation.Horizontal };
-
-                var itemText = new TextBlock { Text = $"{tovar.Name} - {zakaz.Quantity} шт. - {zakaz.SumOrder.ToString("C")}" };
-                var increaseButton = new Button { Content = "+" };
-                var decreaseButton = new Button { Content = "-" };
-                var deleteButton = new Button { Content = "Удалить" };
-
-                increaseButton.Click += (s, e) => UpdateItemQuantity(zakaz, 1);
-                decreaseButton.Click += (s, e) => UpdateItemQuantity(zakaz, -1);
-                deleteButton.Click += (s, e) => RemoveItemFromCart(zakaz);
-
-                item.Children.Add(itemText);
-                item.Children.Add(increaseButton);
-                item.Children.Add(decreaseButton);
-                item.Children.Add(deleteButton);
-
-                ItemsListBox.Items.Add(item);
+                Order = order;
+            }
+        }
+        private void IncreaseButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is OrderViewModel orderViewModel)
+            {
+                UpdateItemQuantity(orderViewModel.Order, 1);
+                RefreshItemsList();
             }
         }
 
+        private void DecreaseButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is OrderViewModel orderViewModel)
+            {
+                UpdateItemQuantity(orderViewModel.Order, -1);
+                RefreshItemsList();
+            }
+        }
 
-        private void UpdateItemQuantity(Order zakaz, int delta)
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is OrderViewModel orderViewModel)
+            {
+                RemoveItemFromCart(orderViewModel.Order);
+                RefreshItemsList();
+            }
+        }
+
+        private void UpdateItemQuantity(Order order, int delta)
         {
             // Обновляем количество товара
-            zakaz.Quantity += delta;
+            order.Quantity += delta;
 
-            if (zakaz.Quantity <= 0)
+            if (order.Quantity <= 0)
             {
-                RemoveItemFromCart(zakaz);
+                RemoveItemFromCart(order);
             }
             else
             {
-                zakaz.SumOrder = Convert.ToInt32(CalculateDiscountedPrice(zakaz.Book.Prise, zakaz.Book.Discount) * zakaz.Quantity);
+                order.SumOrder = Convert.ToInt32(CalculateDiscountedPrice(order.Book.Prise, order.Book.Discount) * order.Quantity);
 
                 bd.SaveChanges();
                 RefreshItemsList();
             }
         }
 
-        private void RemoveItemFromCart(Order zakaz)
+        private void RemoveItemFromCart(Order order)
         {
-            var trackedZakaz = bd.Orders.Local.FirstOrDefault(z => z.Id == zakaz.Id);
+            var trackedorder = bd.Orders.Local.FirstOrDefault(z => z.Id == order.Id);
 
-            if (trackedZakaz == null)
+            if (trackedorder == null)
             {
-                trackedZakaz = bd.Orders.FirstOrDefault(z => z.Id == zakaz.Id);
+                trackedorder = bd.Orders.FirstOrDefault(z => z.Id == order.Id);
             }
 
-            if (trackedZakaz != null)
+            if (trackedorder != null)
             {
                 // Удаляем товар из базы данных
-                bd.Orders.Remove(trackedZakaz);
+                bd.Orders.Remove(trackedorder);
                 bd.SaveChanges();  // Сохраняем изменения в базе данных
             }
-            korzina.Orders.Remove(zakaz);
+            basket.Orders.Remove(order);
             RefreshItemsList();
         }
 
         private void RefreshItemsList()
         {
-            // Очищаем ListBox, если это необходимо (по желанию)
-            ItemsListBox.Items.Clear();
-
-            // Добавляем обновленные элементы обратно в ListBox
-            foreach (var zakaz in korzina.Orders)
-            {
-                var tovar = zakaz.Book;
-
-                // Проверяем, есть ли уже элемент для этого товара в ListBox
-                var existingItem = ItemsListBox.Items.Cast<StackPanel>().FirstOrDefault(item =>
-                {
-                    var itemText = item.Children.OfType<TextBlock>().FirstOrDefault();
-                    return itemText != null && itemText.Text.Contains(tovar.Name);
-                });
-
-                if (existingItem != null)
-                {
-                    // Если товар уже существует в ListBox, обновляем его текст
-                    var itemText = existingItem.Children.OfType<TextBlock>().First();
-                    itemText.Text = $"{tovar.Name} - {zakaz.Quantity} шт. - {zakaz.SumOrder.ToString("C")}";
-                }
-                else
-                {
-                    // Если товар не найден в ListBox, добавляем новый элемент
-                    var item = new StackPanel { Orientation = Orientation.Horizontal };
-
-                    var itemText = new TextBlock { Text = $"{tovar.Name} - {zakaz.Quantity} шт. - {zakaz.SumOrder.ToString("C")}" };
-                    var increaseButton = new Button { Content = "+" };
-                    var decreaseButton = new Button { Content = "-" };
-                    var deleteButton = new Button { Content = "Удалить" };
-
-                    // При нажатии на "+" увеличиваем количество товара в корзине
-                    increaseButton.Click += (s, e) => UpdateItemQuantity(zakaz, 1);
-                    // При нажатии на "-" уменьшаем количество товара в корзине
-                    decreaseButton.Click += (s, e) => UpdateItemQuantity(zakaz, -1);
-                    // При нажатии на "Удалить" удаляем товар из корзины
-                    deleteButton.Click += (s, e) => RemoveItemFromCart(zakaz);
-
-                    item.Children.Add(itemText);
-                    item.Children.Add(increaseButton);
-                    item.Children.Add(decreaseButton);
-                    item.Children.Add(deleteButton);
-
-                    ItemsListBox.Items.Add(item);
-                }
-            }
+            var items = basket.Orders.Select(order => new OrderViewModel(order)).ToList();
+            ItemsListView.ItemsSource = items; // Привязка данных
         }
         private void PlaceOrder_Click(object sender, RoutedEventArgs e)
         {
             // Рассчитываем итоговую цену без скидки (цена товара без учета скидки)
-            decimal totalPriceWithoutDiscount = korzina.Orders.Sum(z => z.Quantity * z.Book.Prise);
+            decimal totalPriceWithoutDiscount = basket.Orders.Sum(z => z.Quantity * z.Book.Prise);
             // Рассчитываем итоговую цену со скидкой (цена товара с учетом скидки)
-            decimal totalPriceWithDiscount = korzina.Orders.Sum(z => z.Quantity * CalculateDiscountedPrice(z.Book.Prise, z.Book.Discount));
+            decimal totalPriceWithDiscount = basket.Orders.Sum(z => z.Quantity * CalculateDiscountedPrice(z.Book.Prise, z.Book.Discount));
             // Сумма скидки
             decimal totalDiscount = (totalPriceWithoutDiscount - totalPriceWithDiscount);
 
             // Проверяем наличие товара на складе
-            bool allAvailable = korzina.Orders.All(z => z.Book.Remains.HasValue && z.Book.Remains.Value >= z.Quantity);
-            int deliveryDays = korzina.Orders.Count >= 3 && allAvailable ? 3 : 6;
+            bool allAvailable = basket.Orders.All(z => z.Book.Remains.HasValue && z.Book.Remains.Value >= z.Quantity);
+            int deliveryDays = basket.Orders.Count >= 3 && allAvailable ? 3 : 6;
             DateTime deliveryDate = DateTime.Now.AddDays(deliveryDays);
 
-            foreach (var zakaz in korzina.Orders)
+            foreach (var order in basket.Orders)
             {
-                var tovar = zakaz.Book;
+                var tovar = order.Book;
 
-                if (tovar.Remains.HasValue && tovar.Remains.Value >= zakaz.Quantity)
+                if (tovar.Remains.HasValue && tovar.Remains.Value >= order.Quantity)
                 {
                     // Уменьшаем остаток товара
-                    tovar.Remains -= zakaz.Quantity;
+                    tovar.Remains -= order.Quantity;
                 }
                 else
                 {
@@ -166,19 +135,19 @@ namespace Klub.Windows
                 }
             }
 
-            korzina.SumOrder = totalPriceWithDiscount;
-            korzina.Descount = totalDiscount;
-            korzina.Delivery_time = deliveryDays;
-            korzina.Id_status = 2; // Статус заказа (предполагаем, что 2 — это статус, который означает подтверждение заказа)
+            basket.SumOrder = totalPriceWithDiscount;
+            basket.Descount = totalDiscount;
+            basket.Delivery_time = deliveryDays;
+            basket.Id_status = 2; // Статус заказа (предполагаем, что 2 — это статус, который означает подтверждение заказа)
 
             // Перезагружаем объект корзины из базы данных для обновления всех данных
-            var reloadedKorzina = bd.Baskets.FirstOrDefault(k => k.Id == korzina.Id);
-            if (reloadedKorzina != null)
+            var reloadedbasket = bd.Baskets.FirstOrDefault(k => k.Id == basket.Id);
+            if (reloadedbasket != null)
             {
-                reloadedKorzina.SumOrder = korzina.SumOrder;
-                reloadedKorzina.Descount = korzina.Descount;
-                reloadedKorzina.Delivery_time = korzina.Delivery_time;
-                reloadedKorzina.Id_status = korzina.Id_status;
+                reloadedbasket.SumOrder = basket.SumOrder;
+                reloadedbasket.Descount = basket.Descount;
+                reloadedbasket.Delivery_time = basket.Delivery_time;
+                reloadedbasket.Id_status = basket.Id_status;
                 // Сохраняем изменения в базе данных
                 bd.SaveChanges();
             }
@@ -189,18 +158,18 @@ namespace Klub.Windows
             MessageBox.Show($"Итоговая сумма: {totalPriceWithDiscount.ToString("C")}\nСумма скидки: {totalDiscount.ToString("C")}\nДата доставки: {deliveryDate.ToShortDateString()}", "Оформление заказа", MessageBoxButton.OK, MessageBoxImage.Information);
 
             // Генерация PDF с QR-кодом
-            GenerateOrderPdf(korzina);
+            GenerateOrderPdf(basket);
 
             // Переходим в главное окно
             MainWindow main = new MainWindow();
             main.Show();
             this.Close();
-            decimal finalSum = korzina.Orders.Sum(z => z.SumOrder);
+            decimal finalSum = basket.Orders.Sum(z => z.SumOrder);
         }
 
-        private void GenerateOrderPdf(Basket korzina)
+        private void GenerateOrderPdf(Basket basket)
         {
-            string orderInfo = GetOrderInfo(korzina); // Формируем информацию для QR-кода
+            string orderInfo = GetOrderInfo(basket); // Формируем информацию для QR-кода
 
             // Генерация QR-кода
             BarcodeWriter barcodeWriter = new BarcodeWriter
@@ -209,7 +178,9 @@ namespace Klub.Windows
                 Options = new ZXing.Common.EncodingOptions
                 {
                     Width = 300,
-                    Height = 300
+                    Height = 300,
+                    Margin = 1,
+                    Hints = { { ZXing.EncodeHintType.CHARACTER_SET, "UTF-8" } }
                 }
             };
             var qrCodeImage = barcodeWriter.Write(orderInfo);
@@ -230,7 +201,7 @@ namespace Klub.Windows
                 doc.Close();
 
                 // Получаем путь к папке bin\Debug текущего проекта
-                string outputDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Order_" + korzina.Id + ".pdf");
+                string outputDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Order_" + basket.Id + ".pdf");
 
                 // Сохраняем PDF
                 File.WriteAllBytes(outputDirectory, ms.ToArray());
@@ -241,15 +212,15 @@ namespace Klub.Windows
         }
 
         // Формируем строку с информацией о заказе для QR-кода
-        private string GetOrderInfo(Basket korzina)
+        private string GetOrderInfo(Basket basket)
         {
-            return $"Data order: {DateTime.Now.ToShortDateString()}\n" +
-                   $"Data dostavki: {DateTime.Now.AddDays(3).ToShortDateString()}\n" +
-                   $"Number order: {korzina.Id}\n" +
-                   $"Sostav order: {string.Join(", ", korzina.Orders.Select(z => z.Book.Name))}\n" +
-                   $"Sum order: {korzina.SumOrder}\n" +
-                   $"Sum sale: {korzina.Descount}\n" +
-                   $"Kod poluchenija: {korzina.GenericCode}";
+            return $"Дата заказа: {DateTime.Now.ToShortDateString()}\n" +
+                   $"Дата доставки: {DateTime.Now.AddDays(3).ToShortDateString()}\n" +
+                   $"Номер заказа: {basket.Id}\n" +
+                   $"В заказ входят следующие позиции: {string.Join(", ", basket.Orders.Select(z => z.Book.Name))}\n" +
+                   $"Сумма заказа: {basket.SumOrder}\n" +
+                   $"Скидка: {basket.Descount}\n" +
+                   $"Генерируемый код доставки: {basket.GenericCode}";
         }
 
 

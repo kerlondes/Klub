@@ -27,7 +27,7 @@
           <Property Name="Image" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Prise" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="Discount" Type="int" Nullable="false" />
+          <Property Name="Discount" Type="int" />
           <Property Name="Id_Supplier" Type="int" Nullable="false" />
           <Property Name="Id_Status" Type="int" Nullable="false" />
           <Property Name="Remains" Type="int" />
@@ -257,7 +257,7 @@
           <Property Name="Image" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Prise" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="Discount" Type="Int32" Nullable="false" />
+          <Property Name="Discount" Type="Int32" />
           <Property Name="Id_Supplier" Type="Int32" Nullable="false" />
           <Property Name="Id_Status" Type="Int32" Nullable="false" />
           <Property Name="Remains" Type="Int32" />

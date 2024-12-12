@@ -13,31 +13,31 @@ namespace Klub.Windows.ManagerWindows
     public partial class EditOrderWindow : Window
     {
         private BDEntities bd = new BDEntities();
-        public ObservableCollection<Order> ZakazList { get; set; }
+        public ObservableCollection<Order> orderList { get; set; }
         public EditOrderWindow()
         {
             InitializeComponent();
-            LoadZakazData();
+            LoadorderData();
         }
 
-        private void LoadZakazData()
+        private void LoadorderData()
         {
-            // Используем Include для загрузки связанных объектов (Polz и StatusZakaz)
-            var zakazData = bd.Orders
+            // Используем Include для загрузки связанных объектов (Polz и Statusorder)
+            var orderData = bd.Orders
                 .Include(z => z.Basket)  // Загрузка связанной корзины
                 .Include(z => z.Book)    // Загрузка связанного товара
                 .Include(z => z.Basket.User)        // Загрузка пользователя
                 .Include(z => z.Basket.Status_Basket) // Загрузка статуса заказа
                 .ToList();
 
-            ZakazList = new ObservableCollection<Order>(zakazData);
-            ZakazDataGrid.DataContext = this;
+            orderList = new ObservableCollection<Order>(orderData);
+            orderDataGrid.DataContext = this;
         }
 
         private void SaveChanges()
         {
-            // Проверяем каждую запись в коллекции ZakazList на изменения
-            foreach (var item in ZakazList)
+            // Проверяем каждую запись в коллекции orderList на изменения
+            foreach (var item in orderList)
             {
                 bd.Entry(item).State = System.Data.Entity.EntityState.Modified;
             }
