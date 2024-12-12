@@ -251,7 +251,6 @@ namespace Klub
             var currentUser = bd.Users.FirstOrDefault(u => u.Id == CurrentUser.UserId);
             if (currentUser == null)
             {
-                MessageBox.Show("Пользователь не найден!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 

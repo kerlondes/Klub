@@ -14,6 +14,15 @@ namespace Klub.Windows
         {
             InitializeComponent();
             this.tovar = tovar;
+            // Проверяем, задан ли текущий пользователь
+            if (CurrentUser.UserId == 0) // Допустим, 0 означает, что пользователь не авторизован
+            {
+                Button_AddToCart.Visibility = Visibility.Collapsed; // Скрываем кнопку
+            }
+            else
+            {
+                Button_AddToCart.Visibility = Visibility.Visible; // Делаем кнопку видимой
+            }
 
             // Заполняем данные о товаре
             image.Source = LoadImage(tovar.Image); // Обновленный метод для загрузки изображения

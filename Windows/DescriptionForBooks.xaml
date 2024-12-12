@@ -13,6 +13,6 @@
         <TextBlock x:Name="descriptionTextBlock" HorizontalAlignment="Left" Margin="267,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="132" Width="200" Background="White" FontSize="14" IsHitTestVisible="False"/>
         <TextBox x:Name="priceTextBox" HorizontalAlignment="Left" Margin="267,217,0,0" VerticalAlignment="Top" Width="92" Height="23" FontSize="14" BorderBrush="#FF265A10" SelectionBrush="#FF092F06" IsReadOnly="True"/>
         <TextBox x:Name="saleTextBox" HorizontalAlignment="Left" Margin="375,217,0,0" VerticalAlignment="Top" Width="92" Height="23" FontSize="14" BorderBrush="#FF265A10" SelectionBrush="#FF092F06" IsReadOnly="True"/>
-        <Button Content="Добавить в корзину" HorizontalAlignment="Left" Margin="267,256,0,0" VerticalAlignment="Top" Height="32" Width="200" Background="#FF92D050" FontWeight="Bold" FontSize="14" BorderBrush="#FF76A93F" Click="Button_Click"/>
+        <Button x:Name="Button_AddToCart" Content="Добавить в корзину" HorizontalAlignment="Left" Margin="267,256,0,0" VerticalAlignment="Top" Height="32" Width="200" Background="#FF92D050" FontWeight="Bold" FontSize="14" BorderBrush="#FF76A93F" Click="Button_Click"/>
     </Grid>
 </Window>
